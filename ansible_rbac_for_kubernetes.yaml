@@ -1,6 +1,6 @@
 ---
  - name: User Creation in K8s
-   hosts: proxy-servers 
+   hosts: master
    gather_facts: false
    vars_prompt:
    - name: UserName
