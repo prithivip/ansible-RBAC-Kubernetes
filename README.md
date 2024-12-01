@@ -2,8 +2,6 @@ This playbook will prompt for
 
 root@ansible:~/ansible/ansible-RBAC-Kubernetes# ansible-playbook ansible_rbac_for_kubernetes.yaml -i /root/ansible/inventory/kube_inventory 
 
-[WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
-
 Enter Username: bob
 
 Enter Groupname: production
