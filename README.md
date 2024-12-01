@@ -19,52 +19,55 @@ Enter the API Verb rules For New User Like (create,delete,update,patch,get,list,
 Enter the API Resources For New User Like (pod,deployment,daemonset,statefulset,service): pod,deployment,service
 
 
-PLAY [User Creation in K8s] ************************************************************************************
+Verification steps:
 
-TASK [Creating Namespace If not exist] *************************************************************************
+==================
 
-[WARNING]: conditional statements should not include jinja2 templating delimiters such as {{ }} or {% %}.
+On Master node
 
-Found: "{{Namespace}}" is defined
+Using certificate :
 
-changed: [kmaster]
+==================
 
-TASK [Generating Private Key For New User] *********************************************************************
+cd /etc/kubernetes/users/certificates
 
-changed: [kmaster]
+kubectl config view
 
-TASK [Creating CSR (Certificate Signing Request)] **************************************************************
+kubectl config get-contexts
 
-changed: [kmaster]
+kubectl config set-context bob --user=bob --cluster=kubernetes
 
-TASK [Signing Newuser Certificate With K8s CA (Certificate Authorities)] ***************************************
+kubectl config set-credentials bob --client-key=bob.key --client-certificate=bob.crt --embed-certs
 
-changed: [kmaster]
+kubectl config use-context bob
 
-TASK [Setting up kubeconfig for newuser] ***********************************************************************
+kubectl config get-contexts
 
-changed: [kmaster]
+kubectl auth can-i create deployments --namespace production
 
-TASK [Add User in Kubeconfig File] *****************************************************************************
+kubectl run nginx --image nginx -n production
 
-changed: [kmaster]
+kubectl get pods -n production
 
-TASK [Setting Up Context For New User] *************************************************************************
+kubectl config use-context kubernetes-admin@kubernetes
 
-changed: [kmaster]
+Impersonate from kubernetes admin user :
 
-TASK [Creating Roles for New User] *****************************************************************************
+kubectl auth can-i list secrets --namespace production --as bob
 
-changed: [kmaster]
 
-TASK [Assigning Roles For New User] ****************************************************************************
+Using kubeconfig :[No config context switch is needed]
 
-changed: [kmaster]
+==================
 
-TASK [Modifying User Context] **********************************************************************************
+kubectl --kubeconfig bob.kubeconfig get pod -n production
 
-changed: [kmaster]
+kubectl --kubeconfig bob.kubeconfig get secrets -n production
 
-PLAY RECAP *****************************************************************************************************
+kubectl --kubeconfig bob.kubeconfig create deployment webserver --replicas=2 --image=nginx:alpine
 
-kmaster                    : ok=10   changed=10   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+kubectl --kubeconfig bob.kubeconfig get pod -n production
+
+
+
+
